@@ -1,0 +1,48 @@
+name: Build and Release npm Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Triggers the workflow on version tags (e.g., v1.0.0)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Specify the version of Node.js
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the package
+        run: npm run build
+
+      - name: Package the build
+        run: npm pack
+        id: pack # This step will create a tarball (e.g., your-package-name-1.0.0.tgz)
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload npm Package to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.pack.outputs.tarball_file }}
+          asset_name: your-package-name-1.0.0.tgz # Replace with dynamic version if needed
+          asset_content_type: application/gzip
