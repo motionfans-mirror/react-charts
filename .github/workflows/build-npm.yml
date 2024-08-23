@@ -36,14 +36,14 @@ jobs:
         run: echo "PACKAGE_NAME=$(jq -r .name package.json)" >> $GITHUB_ENV
       
       - name: Get package name from package.json
-        id: pkg_name
+        id: pkg_version
         run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
-          prerelease: true
+          prerelease: false
           title: Release ${{ github.ref_name }}
           files: |
             ./${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.tgz
