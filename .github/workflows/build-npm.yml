@@ -42,4 +42,4 @@ jobs:
           prerelease: true
           title: Release ${{ github.ref_name }}
           files: |
-            ./${{ env.PACKAGE_NAME }}.tgz
+            ./${{ steps.pack.outputs.tarball_file }}.tgz
