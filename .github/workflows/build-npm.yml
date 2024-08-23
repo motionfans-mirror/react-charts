@@ -39,11 +39,15 @@ jobs:
         id: pkg_version
         run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
+      - name: Get package name from package.json
+        id: pkg_version
+        run: mv ./${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.tgz ./${{ env.PACKAGE_NAME }}.tgz
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           prerelease: false
-          title: Release ${{ github.ref_name }}
+          title: Release ${{ github.ref_name }} (${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }})
           files: |
-            ./${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.tgz
+            ./${{ env.PACKAGE_NAME }}.tgz
